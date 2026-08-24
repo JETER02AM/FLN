@@ -99,13 +99,105 @@
   .cot-box .cot-pct{font-size:34px; font-weight:800; color:var(--amber); line-height:1;}
   .cot-box .cot-label{font-size:13px; color:var(--navy); font-weight:700; max-width:260px; line-height:1.3;}
   .cot-box .cot-sub{font-size:12px; color:var(--mute); margin-left:auto;}
+
+  header{display:flex; justify-content:space-between; align-items:flex-start; gap:16px; flex-wrap:wrap;}
+  header .header-text{flex:1 1 380px; padding-right:170px;}
+
+  .next-steps-wrap{position:fixed; top:18px; right:22px; z-index:100;}
+  .next-steps-btn{
+    display:flex; align-items:center; gap:9px; background:var(--rust); color:#fff; border:none;
+    border-radius:999px; padding:13px 22px; font-size:14.5px; font-weight:800; cursor:pointer;
+    font-family:inherit; letter-spacing:.2px;
+    box-shadow:0 6px 16px rgba(184,80,66,0.45), 0 0 0 0 rgba(184,80,66,0.5);
+    animation:pulseGlow 2.4s ease-in-out infinite;
+    transition:background .15s ease, transform .15s ease;
+  }
+  .next-steps-btn:hover{background:#9c3f34; transform:translateY(-1px);}
+  .next-steps-btn .caret{font-size:11px; transition:transform .15s ease;}
+  .next-steps-btn.open .caret{transform:rotate(180deg);}
+
+  @keyframes pulseGlow{
+    0%{box-shadow:0 6px 16px rgba(184,80,66,0.45), 0 0 0 0 rgba(184,80,66,0.45);}
+    70%{box-shadow:0 6px 16px rgba(184,80,66,0.45), 0 0 0 12px rgba(184,80,66,0);}
+    100%{box-shadow:0 6px 16px rgba(184,80,66,0.45), 0 0 0 0 rgba(184,80,66,0);}
+  }
+
+  .next-steps-menu{
+    position:absolute; top:calc(100% + 8px); right:0; min-width:210px;
+    background:#fff; border:1px solid var(--line); border-radius:10px;
+    box-shadow:0 10px 24px rgba(0,0,0,0.2); padding:6px; z-index:20;
+    list-style:none; margin:0; display:none;
+  }
+  .next-steps-menu.open{display:block;}
+  .next-steps-menu li{
+    padding:10px 12px; font-size:13.5px; color:var(--ink); border-radius:6px; cursor:pointer;
+    font-weight:700; transition:background .12s ease;
+  }
+  .next-steps-menu li:hover{background:var(--lightbg); color:var(--rust);}
+
+  .steps-overlay{
+    position:fixed; inset:0; background:rgba(20,26,40,0.45); z-index:99;
+    display:none; align-items:flex-start; justify-content:flex-end;
+    padding:80px 24px 24px 24px;
+  }
+  .steps-overlay.open{display:flex;}
+  .steps-panel{
+    background:#fff; border-radius:12px; width:100%; max-width:560px; max-height:80vh;
+    overflow-y:auto; box-shadow:0 16px 40px rgba(0,0,0,0.3); border:1px solid var(--line);
+  }
+  .steps-panel-head{
+    position:sticky; top:0; background:var(--rust); color:#fff; padding:16px 20px;
+    display:flex; align-items:center; justify-content:space-between; border-radius:12px 12px 0 0;
+  }
+  .steps-panel-head h3{margin:0; font-size:17px; font-weight:800;}
+  .steps-panel-close{
+    background:rgba(255,255,255,0.2); border:none; color:#fff; width:28px; height:28px;
+    border-radius:50%; font-size:16px; line-height:1; cursor:pointer; font-weight:700;
+  }
+  .steps-panel-close:hover{background:rgba(255,255,255,0.35);}
+  .steps-panel-body{padding:18px 20px 22px;}
+  .steps-group{margin-bottom:18px;}
+  .steps-group:last-child{margin-bottom:0;}
+  .steps-group h4{
+    margin:0 0 8px; font-size:13px; font-weight:800; color:var(--navy); text-transform:uppercase;
+    letter-spacing:.4px; border-bottom:2px solid var(--amber); display:inline-block; padding-bottom:3px;
+  }
+  .steps-group ul{margin:0; padding-left:20px;}
+  .steps-group li{font-size:13.5px; color:var(--ink); line-height:1.55; margin-bottom:9px;}
+  .steps-group li:last-child{margin-bottom:0;}
+  .steps-empty{font-size:13.5px; color:var(--mute); font-style:italic; line-height:1.5;}
 </style>
 </head>
 <body>
+<div class="next-steps-wrap">
+  <button class="next-steps-btn" id="nextStepsBtn" type="button">
+    Next Steps <span class="caret">&#9660;</span>
+  </button>
+  <ul class="next-steps-menu" id="nextStepsMenu">
+    <li data-role="DC">DC</li>
+    <li data-role="DEO_ADEO">DEO &amp; ADEO</li>
+    <li data-role="BEO_ABEO">BEO &amp; ABEO</li>
+    <li data-role="CRCC">CRCC</li>
+    <li data-role="DNC">DNC</li>
+    <li data-role="School">School level</li>
+  </ul>
+</div>
+
+<div class="steps-overlay" id="stepsOverlay">
+  <div class="steps-panel" id="stepsPanel">
+    <div class="steps-panel-head">
+      <h3 id="stepsPanelTitle">Next Steps</h3>
+      <button class="steps-panel-close" id="stepsPanelClose" type="button" aria-label="Close">&times;</button>
+    </div>
+    <div class="steps-panel-body" id="stepsPanelBody"></div>
+  </div>
+</div>
 <div class="wrap">
   <header>
-    <h1>Puri District — Block-wise Focus Remediation Explorer</h1>
-    <p>Click a pin on the map (or a block name below) to see enrolment-band school counts, student reach, and MCM feedback status for that block.</p>
+    <div class="header-text">
+      <h1>Puri District — Block-wise Focus Remediation Explorer</h1>
+      <p>Click a pin on the map (or a block name below) to see enrolment-band school counts, student reach, and MCM feedback status for that block.</p>
+    </div>
   </header>
 
   <div class="district-note" id="districtNote"></div>
@@ -146,6 +238,135 @@ const mapFrame = document.getElementById('mapFrame');
 const panel = document.getElementById('panel');
 const chipRow = document.getElementById('chipRow');
 const districtNote = document.getElementById('districtNote');
+
+// Action steps content, mapped from the FLN stakeholder action-step reference tables.
+// Note: DIET's steps are shown under "DNC" and Pedagogy Coordinator's steps are shown
+// under "CRCC", since those were the closest matching recipients in this menu; "DC" and
+// "School level" don't have dedicated action steps in the source tables yet.
+const NEXT_STEPS = {
+  DC: {
+    title: 'DC',
+    groups: []
+  },
+  DEO_ADEO: {
+    title: 'DEO & ADEO',
+    groups: [
+      { heading: 'DEO', items: [
+        'Presiding the FLN District Action Plan (DAP) Meeting with all key and chairing monthly FLN DRMs to review progress against the DAP',
+        'Ensure a Pre-alignment meeting is conducted with all key stakeholders before the Quarterly DPMU chaired by DC',
+        'Advocating the use of data by District, Block and Cluster Officials in their review meetings and discussion',
+        'Ensuring budgetary support for quarterly CRCC capacity building sessions'
+      ]},
+      { heading: 'ADEO (Academics)', items: [
+        'Conducting FLN DRM meetings on schedule and ensuring key performance indicators (KPIs) are discussed',
+        'Deciding and assigning the key actions to be taken and reviewing the status of the actionables is discussed in the next meeting',
+        'Ensuring BEOs conduct block FLN review meetings timely covering all indicators',
+        'Leading the convergence meeting from DPC and DIET before the DPMU meeting'
+      ]}
+    ]
+  },
+  BEO_ABEO: {
+    title: 'BEO & ABEO',
+    groups: [
+      { heading: 'BEO/ABEO', items: [
+        'Attend all district review meetings (monthly & quarterly) with updated details of previous review meeting action steps.',
+        'Chairing the monthly FLN BRM meetings, discussing the KPIs and data dashboard',
+        'Conducting mandated school visits and use the data collected through district monitoring tool'
+      ]}
+    ]
+  },
+  CRCC: {
+    title: 'CRCC',
+    groups: [
+      { heading: 'Pedagogy Coordinator', items: [
+        'Co Creating the agenda to be discussed for Review Meetings.',
+        'Setting up timely FLN DRM Meetings while following the KPIs discussed.',
+        'Collecting and reporting on the documentation of the proceedings of FLN DRM & BRM.'
+      ]}
+    ]
+  },
+  DNC: {
+    title: 'DNC',
+    groups: [
+      { heading: 'DIET', items: [
+        'Lead academic support to CRCCs and teachers through effective MCMs & and quality direct-to-teacher academic resources',
+        'Quarterly workshops for CRCCs to strengthen mentoring and data usage.',
+        'Provide classroom mentoring support to CRCCs in presence of teacher.'
+      ]}
+    ]
+  },
+  School: {
+    title: 'School level',
+    groups: []
+  }
+};
+
+// Next Steps dropdown
+const nextStepsBtn = document.getElementById('nextStepsBtn');
+const nextStepsMenu = document.getElementById('nextStepsMenu');
+const stepsOverlay = document.getElementById('stepsOverlay');
+const stepsPanel = document.getElementById('stepsPanel');
+const stepsPanelTitle = document.getElementById('stepsPanelTitle');
+const stepsPanelBody = document.getElementById('stepsPanelBody');
+const stepsPanelClose = document.getElementById('stepsPanelClose');
+
+function closeNextStepsMenu(){
+  nextStepsBtn.classList.remove('open');
+  nextStepsMenu.classList.remove('open');
+}
+
+function closeStepsPanel(){
+  stepsOverlay.classList.remove('open');
+}
+
+function openStepsPanel(roleKey){
+  const entry = NEXT_STEPS[roleKey];
+  if(!entry) return;
+  stepsPanelTitle.textContent = entry.title;
+  if(entry.groups.length === 0){
+    stepsPanelBody.innerHTML = `<div class="steps-empty">No action steps have been added for this recipient yet.</div>`;
+  } else {
+    stepsPanelBody.innerHTML = entry.groups.map(g => `
+      <div class="steps-group">
+        <h4>${g.heading}</h4>
+        <ul>${g.items.map(i => `<li>${i}</li>`).join('')}</ul>
+      </div>
+    `).join('');
+  }
+  stepsOverlay.classList.add('open');
+}
+
+nextStepsBtn.addEventListener('click', (e)=>{
+  e.stopPropagation();
+  nextStepsBtn.classList.toggle('open');
+  nextStepsMenu.classList.toggle('open');
+});
+
+nextStepsMenu.querySelectorAll('li').forEach(item=>{
+  item.addEventListener('click', (e)=>{
+    e.stopPropagation();
+    closeNextStepsMenu();
+    openStepsPanel(item.dataset.role);
+  });
+});
+
+stepsPanelClose.addEventListener('click', closeStepsPanel);
+stepsOverlay.addEventListener('click', (e)=>{
+  if(e.target === stepsOverlay) closeStepsPanel();
+});
+
+document.addEventListener('click', (e)=>{
+  if(!nextStepsMenu.contains(e.target) && e.target !== nextStepsBtn){
+    closeNextStepsMenu();
+  }
+});
+
+document.addEventListener('keydown', (e)=>{
+  if(e.key === 'Escape'){
+    closeNextStepsMenu();
+    closeStepsPanel();
+  }
+});
 
 // District overview note
 const d = DATA.district;
